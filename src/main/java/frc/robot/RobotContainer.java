@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveForward;
+import frc.robot.commands.Enco_gyroCMD;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.KickRobotCMD;
 import frc.robot.commands.PIDCommanddd;
@@ -39,6 +40,7 @@ public class RobotContainer {
     // Configure the button bindings
     new JoystickButton(joystick1,1).whileActiveOnce(new DriveForward(driveTrain,DriveContasts.SPEED_LEFT ,DriveContasts.SPEED_RIGHT));
     new JoystickButton(joystick1,2).whileActiveOnce(new PIDCommanddd(pidCommand,PIDContasts.ILIMIT, PIDContasts.kP, PIDContasts.kI,PIDContasts.kD,PIDContasts.setPoint));
+    new JoystickButton(joystick1,3).whileActiveOnce(new Enco_gyroCMD(0.5, driveTrain));
     configureButtonBindings();
   }
 

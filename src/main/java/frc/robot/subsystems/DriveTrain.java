@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -17,9 +18,13 @@ public class DriveTrain extends SubsystemBase {
   private final Victor victorRight2 = new Victor(3);
   private final MotorControllerGroup left_m = new MotorControllerGroup(victorLeft1, victorLeft2);
   private final MotorControllerGroup right_m = new MotorControllerGroup(victorRight1, victorRight2);
-  private final DifferentialDrive m_drive = new DifferentialDrive(left_m,right_m);
+  private final DifferentialDrive drive = new DifferentialDrive(left_m,right_m);
   private final AnalogGyro gyro = new AnalogGyro(0);
+  private final Encoder l_encoder = new Encoder(0,1);
+  private final Encoder r_encoder = new Encoder(9,8);
 
+double kP = 0.5;
+  
 
 
 
@@ -84,13 +89,40 @@ public class DriveTrain extends SubsystemBase {
           }
 
 
+          public void Encoders(double kP) {
+            double error = l_encoder.getDistance() - r_encoder.getDistance();
+  
+            drive.arcadeDrive(.5 + kP * error, .5 - kP * error);
+            /*
+            if(l_encoder.getDistance() < 5) {
+                drive.arcadeDrive(joy1.getY()*0,5,joy1.getX()*0,5);
+          } else {
+                drive.arcadeDrive(joy1.getY(),joy1.getX());
+            }
+            */
+          }
+
+          public void Gyro() {
+            double set_point = 10;
+  
+            double sensor_position = -gyro.getRate();
+            
+            double error = set_point - sensor_position;
           
+            double outputSpeed = kP * error;
+          
+            left_m.set(outputSpeed);
+            right_m.set(outputSpeed);
+          }
 
           
 
-          
+
+
           @Override
           public void simulationPeriodic() {
+            Shuffleboard.getTab("Gyrooo").add(gyro);
+            right_m.setInverted(true);
             // debug
             SmartDashboard.putNumber("Gyro value", gyro.getAngle());
         
